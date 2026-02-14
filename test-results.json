@@ -1,0 +1,6 @@
+{"ImportPath":"./example/...","Action":"build-output","Output":"# ./example/...\n"}
+{"ImportPath":"./example/...","Action":"build-output","Output":"pattern ./example/...: directory prefix example does not contain main module or its selected dependencies\n"}
+{"ImportPath":"./example/...","Action":"build-fail"}
+{"Time":"2026-02-14T09:19:35.046550188Z","Action":"start","Package":"./example/..."}
+{"Time":"2026-02-14T09:19:35.046598739Z","Action":"output","Package":"./example/...","Output":"FAIL\t./example/... [setup failed]\n"}
+{"Time":"2026-02-14T09:19:35.046604149Z","Action":"fail","Package":"./example/...","Elapsed":0,"FailedBuild":"./example/..."}
