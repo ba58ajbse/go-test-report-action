@@ -10,6 +10,11 @@ fi
 
 failed_details_file="${RUNNER_TEMP:-/tmp}/go-test-failed-details.json"
 
+# Filter to valid JSON lines only (go test -json may include non-JSON output)
+filtered_file="${RUNNER_TEMP:-/tmp}/go-test-filtered.json"
+grep '^\s*{' "$results_file" | jq -c '.' 2>/dev/null > "$filtered_file" || true
+results_file="$filtered_file"
+
 # Parse go test -json output using jq
 # Count pass/fail/skip from test-level events (where .Test is present)
 jq -s '
