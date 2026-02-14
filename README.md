@@ -1,9 +1,11 @@
 # Go Test Results Action
 
-`go test -json` の出力をパースし、テスト結果を PR コメントおよび Actions Job Summary に表示する GitHub Composite Action です。
+Go テストの実行から結果の可視化までを一括で行う GitHub Composite Action です。
+テスト結果を PR コメントおよび Actions Job Summary に表示します。
 
 ## Features
 
+- `go test` の実行・JSON パース・結果表示をワンステップで実行
 - PR コメントにテスト結果サマリーと失敗テストのログを投稿
 - Actions Job Summary に全テストの詳細テーブルを表示
 - 既存コメントの自動更新（同一 PR への再実行時）
@@ -11,42 +13,33 @@
 
 ## Usage
 
+### Basic
+
 ```yaml
-name: Test
+- uses: actions/checkout@v4
+- uses: actions/setup-go@v5
+  with:
+    go-version: "1.22"
+- uses: ba58ajbse/testview-actions@main
+```
 
-on:
-  pull_request:
+### With options
 
-permissions:
-  pull-requests: write
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.22"
-
-      - name: Run tests
-        run: go test -json ./... > test-results.json 2>&1 || true
-
-      - name: Show test output
-        run: jq -rj 'select(.Output != null) | .Output' test-results.json || true
-
-      - name: Post test results
-        uses: ba58ajbse/testview-actions@main
-        with:
-          test-results-file: test-results.json
+```yaml
+- uses: ba58ajbse/testview-actions@main
+  with:
+    test-path: "./internal/..."
+    working-directory: "backend"
+    test-flags: "-race -count=1 -timeout 60s"
 ```
 
 ## Inputs
 
 | Name | Required | Default | Description |
 |------|----------|---------|-------------|
-| `test-results-file` | Yes | - | `go test -json` の出力ファイルパス |
+| `test-path` | No | `./...` | テスト対象の Go パッケージパターン |
+| `working-directory` | No | `.` | `go test` の実行ディレクトリ（go.mod の場所） |
+| `test-flags` | No | `""` | `go test` への追加フラグ（`-race`, `-count=1` など） |
 | `token` | No | `${{ github.token }}` | PR コメント投稿用の GitHub トークン |
 | `post-comment` | No | `"true"` | PR コメントを投稿するかどうか (`"true"` / `"false"`) |
 | `comment-tag` | No | `"go-test-results"` | コメント識別用タグ（同一タグのコメントを更新） |

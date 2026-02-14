@@ -16,14 +16,7 @@ jobs:
         with:
           go-version: "1.22"
 
-      - name: Run tests
-        working-directory: example
-        run: go test -json ./... > ../test-results.json 2>&1 || true
-
-      - name: Show test output
-        run: jq -rj 'select(.Output != null) | .Output' test-results.json || true
-
-      - name: Post test results
+      - name: Run tests and post results
         uses: ./
         with:
-          test-results-file: test-results.json
+          working-directory: example
