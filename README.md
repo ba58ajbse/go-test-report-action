@@ -19,7 +19,7 @@ Go テストの実行から結果の可視化までを一括で行う GitHub Com
 - uses: actions/checkout@v4
 - uses: actions/setup-go@v5
   with:
-    go-version: "1.22"
+    go-version: "1.25"
 - uses: ba58ajbse/go-test-report-action@main
 ```
 
