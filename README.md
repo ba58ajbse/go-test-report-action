@@ -20,13 +20,13 @@ Go テストの実行から結果の可視化までを一括で行う GitHub Com
 - uses: actions/setup-go@v5
   with:
     go-version: "1.22"
-- uses: ba58ajbse/testview-actions@main
+- uses: ba58ajbse/go-test-report-action@main
 ```
 
 ### With options
 
 ```yaml
-- uses: ba58ajbse/testview-actions@main
+- uses: ba58ajbse/go-test-report-action@main
   with:
     test-path: "./internal/..."
     working-directory: "backend"
