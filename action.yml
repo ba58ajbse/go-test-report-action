@@ -84,3 +84,10 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
         SUMMARY_FILE: ${{ runner.temp }}/go-test-summary.md
+
+    - name: Check test results
+      if: steps.parse.outputs.failed > 0
+      shell: bash
+      run: |
+        echo "::error::${{ steps.parse.outputs.failed }} test(s) failed"
+        exit 1
