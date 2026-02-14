@@ -4,11 +4,13 @@ set -euo pipefail
 comment_tag="$1"
 summary_file="${SUMMARY_FILE:-${RUNNER_TEMP:-/tmp}/go-test-summary.md}"
 failed_details_file="${FAILED_DETAILS_FILE:-${RUNNER_TEMP:-/tmp}/go-test-failed-details.json}"
+all_tests_file="${ALL_TESTS_FILE:-${RUNNER_TEMP:-/tmp}/go-test-all-details.json}"
 
 total="${TOTAL:-0}"
 passed="${PASSED:-0}"
 failed="${FAILED:-0}"
 skipped="${SKIPPED:-0}"
+elapsed="${ELAPSED:-0}"
 
 {
   # Marker comment for identifying this comment on PRs
@@ -17,9 +19,9 @@ skipped="${SKIPPED:-0}"
   echo ""
 
   if [[ "$failed" -eq 0 ]]; then
-    echo "✅ **All ${total} tests passed**"
+    echo "✅ **All ${total} tests passed** in ${elapsed}s"
   else
-    echo "❌ **${failed} test(s) failed**"
+    echo "❌ **${failed} test(s) failed** in ${elapsed}s"
   fi
 
   echo ""
@@ -30,10 +32,28 @@ skipped="${SKIPPED:-0}"
   echo "| ❌ Failed | ${failed} |"
   echo "| ⏭️ Skipped | ${skipped} |"
 
-  # Append failed test details if any
+  # Test details table
+  if [[ -f "$all_tests_file" ]] && [[ "$(jq length "$all_tests_file")" -gt 0 ]]; then
+    echo ""
+    echo "### Test Details"
+    echo ""
+    echo "| Status | Test | Package | Elapsed |"
+    echo "|--------|------|---------|---------|"
+
+    jq -r '
+      .[] |
+      (if .action == "pass" then "✅"
+       elif .action == "fail" then "❌"
+       elif .action == "skip" then "⏭️"
+       else "❓" end) as $icon |
+      "| \($icon) | \(.test) | \(.package) | \((.elapsed // 0) | tostring)s |"
+    ' "$all_tests_file"
+  fi
+
+  # Append failed test output logs if any
   if [[ "$failed" -gt 0 ]] && [[ -f "$failed_details_file" ]]; then
     echo ""
-    echo "### Failed Tests"
+    echo "### Failed Test Output"
     echo ""
 
     jq -r '

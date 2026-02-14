@@ -27,6 +27,9 @@ outputs:
   skipped:
     description: "Number of skipped tests"
     value: ${{ steps.parse.outputs.skipped }}
+  elapsed:
+    description: "Total elapsed time in seconds"
+    value: ${{ steps.parse.outputs.elapsed }}
   summary:
     description: "Markdown summary of test results"
     value: ${{ steps.format.outputs.summary }}
@@ -48,7 +51,9 @@ runs:
         PASSED: ${{ steps.parse.outputs.passed }}
         FAILED: ${{ steps.parse.outputs.failed }}
         SKIPPED: ${{ steps.parse.outputs.skipped }}
+        ELAPSED: ${{ steps.parse.outputs.elapsed }}
         FAILED_DETAILS_FILE: ${{ runner.temp }}/go-test-failed-details.json
+        ALL_TESTS_FILE: ${{ runner.temp }}/go-test-all-details.json
 
     - name: Post PR comment
       if: github.event_name == 'pull_request'
