@@ -32,6 +32,18 @@ elapsed="${ELAPSED:-0}"
   echo "| ✅ Passed | ${passed} |"
   echo "| ❌ Failed | ${failed} |"
   echo "| ⏭️ Skipped | ${skipped} |"
+
+  # Append failed test output logs if any
+  if [[ "$failed" -gt 0 ]] && [[ -f "$failed_details_file" ]]; then
+    echo ""
+    echo "### Failed Tests"
+    echo ""
+
+    jq -r '
+      .[] |
+      "<details>\n<summary>❌ " + .test + " (" + .package + ") - " + ((.elapsed // 0) | tostring) + "s</summary>\n\n```\n" + .output + "```\n\n</details>\n"
+    ' "$failed_details_file"
+  fi
 } > "$summary_file"
 
 # --- Actions Job Summary (detailed) ---
