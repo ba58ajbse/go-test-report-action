@@ -18,7 +18,11 @@ jobs:
 
       - name: Run tests
         working-directory: example
-        run: go test -json ./... 2>&1 | tee ../test-results.json || true
+        run: go test -v ./... || true
+
+      - name: Generate test results JSON
+        working-directory: example
+        run: go test -json ./... > ../test-results.json 2>&1 || true
 
       - name: Post test results
         uses: ./
