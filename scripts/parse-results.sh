@@ -10,6 +10,26 @@ fi
 
 failed_details_file="${RUNNER_TEMP:-/tmp}/go-test-failed-details.json"
 
+# Validate that the results file contains valid JSON
+if ! jq -e . "$results_file" > /dev/null 2>&1; then
+  echo "::error::Test results file is not valid JSON: $results_file"
+  echo "::error::This usually means go test failed to run or produced non-JSON output"
+  
+  # Output zero counts for invalid JSON
+  {
+    echo "total=0"
+    echo "passed=0"
+    echo "failed=0"
+    echo "skipped=0"
+  } >> "$GITHUB_OUTPUT"
+  
+  # Create empty failed details file
+  echo "[]" > "$failed_details_file"
+  
+  echo "Parsed test results: total=0 passed=0 failed=0 skipped=0 (invalid JSON input)"
+  exit 0
+fi
+
 # Parse go test -json output using jq
 # Count pass/fail/skip from test-level events (where .Test is present)
 jq -s '
