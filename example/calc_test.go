@@ -15,9 +15,8 @@ func TestSubtract(t *testing.T) {
 }
 
 func TestMultiply(t *testing.T) {
-	// Intentionally wrong expectation to demonstrate a failing test
-	if got := Multiply(3, 4); got != 11 {
-		t.Errorf("Multiply(3, 4) = %d, want 11", got)
+	if got := Multiply(3, 4); got != 12 {
+		t.Errorf("Multiply(3, 4) = %d, want 12", got)
 	}
 }
 
